@@ -29,7 +29,6 @@ public class ChangePwdController {
     /**
      * method        : setChangePasswordService
      * date          : 25-01-02
-     * param         : ChangePasswordService changePasswordService - 비밀번호 변경 서비스 객체
      * return        : void
      * description   : ChangePasswordService 객체를 주입받아 설정.
      */

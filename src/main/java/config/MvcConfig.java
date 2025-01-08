@@ -1,13 +1,20 @@
 package config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import controller.RegisterRequestValidator;
 import interceptor.AuthCheckInterceptor;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.validation.Validator;
 import org.springframework.web.servlet.config.annotation.*;
+
+import java.util.List;
 
 /**
  * class         : MvcConfig
@@ -103,6 +110,26 @@ public class MvcConfig implements WebMvcConfigurer {
 		ms.setBasenames("message.label");  		// 메시지 파일의 기본 이름 설정
 		ms.setDefaultEncoding("UTF-8");    		// 메시지 파일의 문자 인코딩 설정
 		return ms;   							// MessageSource 객체 반환
+	}
+
+	/**
+	 * method        : extendMessageConverters
+	 * date          : 25-01-08
+	 * description   : Jackson2 기반 메시지 컨버터를 설정
+	 * param         : converters - HttpMessageConverter 리스트
+	 * >>MappingJackson2HttpMessageConverter에서 사용할 타입을 메소드에서 지정하더라도 개별 속성에 @JsonFormat을 사용했으면 해당 설정이 우선된다.
+	 */
+	@Override
+	public void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
+		// Jackson2 ObjectMapper를 생성하며 타임스탬프 대신 ISO 8601 형식을 사용하도록 설정
+		ObjectMapper objectMapper = Jackson2ObjectMapperBuilder
+				.json() // JSON 포맷으로 ObjectMapper를 빌드
+				.featuresToDisable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)   //   "2024-12-19T23:56:34"
+				//.simpleDateFormat("yyyyMMddHHmmss")                                 //   "20241219235634"
+				.build();
+
+		// Jackson2 ObjectMapper를 기반으로 한 메시지 컨버터를 생성하고 리스트의 가장 앞에 추가
+		converters.add(0, new MappingJackson2HttpMessageConverter(objectMapper));
 	}
 
 

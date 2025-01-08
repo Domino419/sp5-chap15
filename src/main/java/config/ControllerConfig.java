@@ -1,9 +1,6 @@
 package config;
 
-import controller.ChangePwdController;       // 250106 추기
-import controller.LogoutController;
-import controller.MemberListController;      //250107 추가
-import controller.MemberDetailController;      //250107 추가
+import controller.*;
 
 
 import org.apache.commons.logging.Log;
@@ -12,8 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import controller.RegisterController;
-import controller.LoginController;      // 250102 추기
 import spring.ChangePasswordService;    // 250106 추기
 import spring.MemberRegisterService;
 import spring.AuthService; // 250102 추기
@@ -112,5 +107,19 @@ public class ControllerConfig {
 		controller.setMemberDao(memberDao);
 		return controller;
 	}
+
+	/**
+	 * method        : restApi
+	 * date          : 25-01-08
+	 * return        : RestMemberController - Json 실습을 위한 컨트롤러
+	 */
+	@Bean
+	public RestMemberController restApi(){
+		RestMemberController cont = new RestMemberController();
+		cont.setMemberDao(memberDao);
+		cont.setRegisterService(memberRegSvc);
+		return cont;
+	}
+
 
 }
