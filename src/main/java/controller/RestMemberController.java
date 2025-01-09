@@ -5,6 +5,8 @@ import org.apache.commons.logging.LogFactory;
 
 import java.util.List;
 
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import spring.*;
@@ -58,23 +60,46 @@ public class RestMemberController {
         log.info(":::::::::::::::::::::::::::::::::::::::::::::::::::: New member created");
 
     }
+//
+//    /**
+//     * method        : Member (as is)
+//     * date          : 25-01-08
+//     * return        : Member - 조회된 회원 객체
+//     * description   : 회원 정보를 직접 반환하거나 없을 경우에 null 값을 리턴함.  HTTP 응답코드를 직접 설정함
+//     */
+//    @GetMapping("api/members/{id}")   // http://localhost:8080/api/members/11
+//    public Member MemberAsis(@PathVariable Long id, HttpServletResponse response) throws IOException {
+//        Member member = memberDao.selectById(id);
+//        if(member == null) {
+//            log.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::: RestMemberController#Member() is null" );
+//            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+//            return null;
+//        }
+//        log.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::: RestMemberController#Member() is NotNull" + member  );
+//        return member;
+//    }
+
 
     /**
-     * method        : Member
+     * method        : Member (to be)
      * date          : 25-01-08
-     * return        : Member - 조회된 회원 객체
+     * return        : Member - 조회된 회원 객체 /
+     * description   : 상태 코드와 응답 본문(회원 정보 또는 에러 메시지)을 한 번에 포함하여 반환함.
      */
     @GetMapping("api/members/{id}")   // http://localhost:8080/api/members/11
-    public Member Member(@PathVariable Long id, HttpServletResponse response) throws IOException {
+    public ResponseEntity<Object> member (@PathVariable Long id) throws IOException {
         Member member = memberDao.selectById(id);
         if(member == null) {
             log.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::: RestMemberController#Member() is null" );
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
-            return null;
+            // response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(new ErrorResponse("no member"));
         }
         log.info(":::::::::::::::::::::::::::::::::::::::::::::::::::::::: RestMemberController#Member() is NotNull" + member  );
-        return member;
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(member);
     }
+
 
     public void setMemberDao(MemberDao memberDao) {
         this.memberDao = memberDao;
